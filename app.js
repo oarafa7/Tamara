@@ -165,7 +165,36 @@ mealListEl.addEventListener("click", (e) => {
   render();
 });
 
-$("estimateBtn").addEventListener("click", () => {
+$("estimateBtn").addEventListener("click", async () => {
+  const file = $("foodPhoto").files[0];
+  const btn = $("estimateBtn");
+
+  if (file) {
+    btn.disabled = true;
+    btn.textContent = "Estimating…";
+    try {
+      const dataUrl = await toDataURL(file);
+      const r = await fetch("/api/estimate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: dataUrl })
+      });
+      const data = await r.json();
+      if (r.ok) {
+        $("foodCalories").value = data.calories;
+      } else {
+        alert("Could not estimate calories: " + (data.error || "unknown error"));
+      }
+    } catch (err) {
+      alert("Estimation request failed: " + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Estimate";
+    }
+    return;
+  }
+
+  // Fallback: keyword match on name when no image is uploaded
   const name = $("foodName").value.toLowerCase();
   const guesses = [
     { k: "apple", c: 95 }, { k: "banana", c: 105 }, { k: "pizza", c: 285 },
@@ -173,7 +202,7 @@ $("estimateBtn").addEventListener("click", () => {
     { k: "rice", c: 200 }, { k: "egg", c: 78 }
   ];
   const hit = guesses.find((g) => name.includes(g.k));
-  $("foodCalories").value = hit ? hit.c : 250;
+  $("foodCalories").value = hit ? hit.c : "";
 });
 
 $("closeDayBtn").addEventListener("click", () => {

@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs/promises');
+const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -62,6 +63,46 @@ app.put('/api/state', async (req, res) => {
     return res.json({ ok: true });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to save state', detail: String(err.message || err) });
+  }
+});
+
+app.post('/api/estimate', async (req, res) => {
+  const { image } = req.body || {};
+  if (!image || !image.startsWith('data:image/')) {
+    return res.status(400).json({ error: 'No valid image provided' });
+  }
+
+  const [header, base64Data] = image.split(',');
+  const mediaType = header.replace('data:', '').replace(';base64', '');
+
+  try {
+    const client = new Anthropic();
+    const response = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 64,
+      messages: [{
+        role: 'user',
+        content: [
+          {
+            type: 'image',
+            source: { type: 'base64', media_type: mediaType, data: base64Data }
+          },
+          {
+            type: 'text',
+            text: 'Estimate the total calories in this food photo. Reply with only a single integer number, nothing else.'
+          }
+        ]
+      }]
+    });
+
+    const text = response.content[0].text.trim();
+    const calories = parseInt(text.replace(/\D/g, ''), 10);
+    if (!Number.isFinite(calories) || calories <= 0) {
+      return res.status(422).json({ error: 'Could not parse calorie estimate', raw: text });
+    }
+    return res.json({ calories });
+  } catch (err) {
+    return res.status(500).json({ error: 'Estimation failed', detail: String(err.message || err) });
   }
 });
 
