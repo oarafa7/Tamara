@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const root = __dirname;
 
-const dataDir = process.env.DATA_DIR || '/data';
+const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
 const dataFile = path.join(dataDir, 'state.json');
 
 const defaultState = {
@@ -110,9 +110,14 @@ app.get('*', (_req, res) => {
   res.sendFile(path.join(root, 'index.html'));
 });
 
-ensureStore().then(() => {
-  app.listen(port, () => {
-    console.log(`Pink Power Tracker running on port ${port}`);
-    console.log(`State file: ${dataFile}`);
+ensureStore()
+  .then(() => {
+    app.listen(port, '0.0.0.0', () => {
+      console.log(`Tutti running on port ${port}`);
+      console.log(`State file: ${dataFile}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to start:', err);
+    process.exit(1);
   });
-});
