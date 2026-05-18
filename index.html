@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pink Power Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <h1>✨ Pink Power Tracker ✨</h1>
+      <p>Healthy habits + fun rewards</p>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Main tabs">
+      <button class="tab active" data-tab="calories" role="tab" aria-selected="true">Calories</button>
+      <button class="tab" data-tab="rewards" role="tab" aria-selected="false">Rewards</button>
+    </nav>
+
+    <main>
+      <section id="calories" class="panel active" role="tabpanel">
+        <div class="card">
+          <h2>Daily Settings</h2>
+          <form id="settingsForm" class="goal-row">
+            <label for="dailyLimit">Calorie limit</label>
+            <input id="dailyLimit" type="number" min="1" step="1" value="1000" />
+            <label for="rewardPerCalorie">£ per calorie under limit</label>
+            <input id="rewardPerCalorie" type="number" min="0" step="0.01" value="1" />
+            <label><input id="rewardCapEnabled" type="checkbox" /> Enable reward cap</label>
+            <label for="rewardCap">Max £ per day</label>
+            <input id="rewardCap" type="number" min="0" step="0.01" value="10" />
+            <button class="primary" type="submit">Save Settings</button>
+          </form>
+        </div>
+
+        <div class="card progress-card">
+          <h2>Today</h2>
+          <div class="progress-wrap">
+            <div class="ring" id="progressRing">
+              <div class="ring-inner">
+                <div class="big" id="remaining">1000</div>
+                <div>remaining</div>
+              </div>
+            </div>
+            <div class="numbers">
+              <p><strong id="consumed">0</strong> eaten</p>
+              <p><strong id="goal">1000</strong> goal</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Log Food</h2>
+          <form id="foodForm" class="food-form">
+            <label for="mealType">Meal</label>
+            <select id="mealType">
+              <option>Breakfast</option>
+              <option>Lunch</option>
+              <option>Dinner</option>
+              <option>Snack</option>
+            </select>
+
+            <label for="foodPhoto">Food photo</label>
+            <input id="foodPhoto" type="file" accept="image/*" capture="environment" />
+
+            <label for="foodName">Food name</label>
+            <input id="foodName" type="text" placeholder="e.g. Pasta" required />
+
+            <label for="foodCalories">Calories (estimated, editable)</label>
+            <div class="calorie-row">
+              <input id="foodCalories" type="number" min="0" placeholder="e.g. 320" required />
+              <button type="button" id="estimateBtn">Estimate</button>
+            </div>
+
+            <button type="submit" class="primary">Add Meal</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Today's Meals</h2>
+          <ul id="mealList" class="meal-list"></ul>
+        </div>
+      </section>
+
+      <section id="rewards" class="panel" role="tabpanel" hidden>
+        <div class="card reward-highlight">
+          <h2>Today's Reward</h2>
+          <p class="reward-amount">£<span id="todayReward">0</span></p>
+          <p class="hint">Formula: max(0, goal - eaten) × (£ per calorie)</p>
+        </div>
+
+        <div class="card">
+          <h2>Reward Log</h2>
+          <button id="closeDayBtn" class="primary">Close Day & Save Reward</button>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th><th>Goal</th><th>Eaten</th><th>Remaining</th><th>Reward</th>
+              </tr>
+            </thead>
+            <tbody id="rewardLog"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
