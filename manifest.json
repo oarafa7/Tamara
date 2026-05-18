@@ -1,0 +1,17 @@
+{
+  "name": "Tutti",
+  "short_name": "Tutti",
+  "description": "Eat well, earn big!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffd9ec",
+  "theme_color": "#ff7eb6",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

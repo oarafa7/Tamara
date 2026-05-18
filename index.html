@@ -3,108 +3,175 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pink Power Tracker</title>
+  <title>Tutti</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Tutti" />
+  <meta name="theme-color" content="#ff7eb6" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <h1>✨ Pink Power Tracker ✨</h1>
-      <p>Healthy habits + fun rewards</p>
+      <img src="/logo.svg" class="topbar-logo" alt="Tutti logo" />
+      <div class="topbar-text">
+        <h1>Tutti</h1>
+        <p class="tagline">Eat well, earn big!</p>
+      </div>
     </header>
 
-    <nav class="tabs" role="tablist" aria-label="Main tabs">
-      <button class="tab active" data-tab="calories" role="tab" aria-selected="true">Calories</button>
-      <button class="tab" data-tab="rewards" role="tab" aria-selected="false">Rewards</button>
-    </nav>
+    <main class="tab-content">
 
-    <main>
+      <!-- FOOD TAB -->
       <section id="calories" class="panel active" role="tabpanel">
-        <div class="card">
-          <h2>Daily Settings</h2>
+
+        <details class="card settings-card">
+          <summary>⚙️ Settings</summary>
           <form id="settingsForm" class="goal-row">
-            <label for="dailyLimit">Calorie limit</label>
+            <label for="dailyLimit">Calorie goal</label>
             <input id="dailyLimit" type="number" min="1" step="1" value="1000" />
-            <label for="rewardPerCalorie">£ per calorie under limit</label>
+            <label for="rewardPerCalorie">£ per calorie under goal</label>
             <input id="rewardPerCalorie" type="number" min="0" step="0.01" value="1" />
-            <label><input id="rewardCapEnabled" type="checkbox" /> Enable reward cap</label>
+            <label class="checkbox-label">
+              <input id="rewardCapEnabled" type="checkbox" />
+              Enable daily reward cap
+            </label>
             <label for="rewardCap">Max £ per day</label>
             <input id="rewardCap" type="number" min="0" step="0.01" value="10" />
             <button class="primary" type="submit">Save Settings</button>
           </form>
-        </div>
+        </details>
 
         <div class="card progress-card">
-          <h2>Today</h2>
           <div class="progress-wrap">
             <div class="ring" id="progressRing">
               <div class="ring-inner">
                 <div class="big" id="remaining">1000</div>
-                <div>remaining</div>
+                <div class="ring-label">left</div>
               </div>
             </div>
             <div class="numbers">
-              <p><strong id="consumed">0</strong> eaten</p>
-              <p><strong id="goal">1000</strong> goal</p>
+              <div class="stat-pill eaten-pill">
+                <span class="stat-num" id="consumed">0</span>
+                <span class="stat-lbl">eaten</span>
+              </div>
+              <div class="stat-pill goal-pill">
+                <span class="stat-num" id="goal">1000</span>
+                <span class="stat-lbl">goal</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="card">
-          <h2>Log Food</h2>
+        <div class="card log-card">
+          <h2>🍽️ Log a Meal</h2>
           <form id="foodForm" class="food-form">
-            <label for="mealType">Meal</label>
-            <select id="mealType">
+
+            <div class="meal-type-row">
+              <button type="button" class="meal-type-btn active" data-meal="Breakfast">🌅 Breakfast</button>
+              <button type="button" class="meal-type-btn" data-meal="Lunch">☀️ Lunch</button>
+              <button type="button" class="meal-type-btn" data-meal="Dinner">🌙 Dinner</button>
+              <button type="button" class="meal-type-btn" data-meal="Snack">🍿 Snack</button>
+            </div>
+            <select id="mealType" style="display:none">
               <option>Breakfast</option>
               <option>Lunch</option>
               <option>Dinner</option>
               <option>Snack</option>
             </select>
 
-            <label for="foodPhoto">Food photo</label>
-            <input id="foodPhoto" type="file" accept="image/*" capture="environment" />
+            <label for="foodPhoto" class="camera-btn" id="cameraBtnLabel">
+              <span class="camera-icon">📸</span>
+              <span class="camera-text">Tap to snap your food!</span>
+              <img id="photoPreview" class="photo-preview hidden" alt="food preview" />
+            </label>
+            <input id="foodPhoto" type="file" accept="image/*" capture="environment"
+                   class="sr-only" aria-label="Food photo" />
 
-            <label for="foodName">Food name</label>
-            <input id="foodName" type="text" placeholder="e.g. Pasta" required />
-
-            <label for="foodCalories">Calories (estimated, editable)</label>
-            <div class="calorie-row">
-              <input id="foodCalories" type="number" min="0" placeholder="e.g. 320" required />
-              <button type="button" id="estimateBtn">Estimate</button>
+            <div id="estimateStatus" class="estimate-status hidden">
+              🍎 Analysing your food...
             </div>
 
-            <button type="submit" class="primary">Add Meal</button>
+            <label for="foodName">What did you eat?</label>
+            <input id="foodName" type="text" placeholder="e.g. Pasta 🍝" required />
+
+            <div class="calorie-row">
+              <input id="foodCalories" type="number" min="0"
+                     placeholder="Calories" required aria-label="Calories" />
+              <button type="button" id="estimateBtn">🔄 Re-estimate</button>
+            </div>
+
+            <button type="submit" class="primary add-btn">➕ Add Meal</button>
           </form>
         </div>
 
         <div class="card">
-          <h2>Today's Meals</h2>
+          <h2>Today's Meals 🍱</h2>
           <ul id="mealList" class="meal-list"></ul>
         </div>
+
       </section>
 
+      <!-- REWARDS TAB -->
       <section id="rewards" class="panel" role="tabpanel" hidden>
-        <div class="card reward-highlight">
-          <h2>Today's Reward</h2>
-          <p class="reward-amount">£<span id="todayReward">0</span></p>
-          <p class="hint">Formula: max(0, goal - eaten) × (£ per calorie)</p>
+
+        <div class="card reward-today-card">
+          <div class="reward-today-label">Today's reward so far</div>
+          <div class="coin-display">
+            <span class="coin-glow">🪙</span>
+            <span class="reward-today-amount">£<span id="todayReward">0.00</span></span>
+          </div>
+          <div class="streak-bar">
+            <span class="streak-icon">🔥</span>
+            <span id="streakCount">0</span>
+            <span class="streak-label"> day streak</span>
+          </div>
         </div>
 
-        <div class="card">
-          <h2>Reward Log</h2>
-          <button id="closeDayBtn" class="primary">Close Day & Save Reward</button>
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th><th>Goal</th><th>Eaten</th><th>Remaining</th><th>Reward</th>
-              </tr>
-            </thead>
-            <tbody id="rewardLog"></tbody>
-          </table>
+        <div class="card coin-bank-card">
+          <div class="coin-bank-label">💰 Total Earned</div>
+          <div class="coin-bank-amount">£<span id="totalEarned">0.00</span></div>
         </div>
+
+        <button id="closeDayBtn" class="primary close-day-btn">
+          🏁 Close Day &amp; Collect Reward
+        </button>
+
+        <div id="celebrationOverlay" class="celebration-overlay hidden" aria-hidden="true">
+          <div class="celebration-content">
+            <div class="celebrate-emoji">🎉</div>
+            <div class="celebrate-text">Day collected!</div>
+            <div class="celebrate-reward">+£<span id="celebrateAmount">0.00</span></div>
+          </div>
+        </div>
+
+        <div class="reward-cards-section">
+          <h2 class="section-heading">Your Reward Collection ✨</h2>
+          <div id="rewardCards" class="reward-cards-grid"></div>
+        </div>
+
+        <table style="display:none"><tbody id="rewardLog"></tbody></table>
+
       </section>
+
     </main>
+
+    <nav class="bottom-tabs" role="tablist" aria-label="Main navigation">
+      <button class="tab active" data-tab="calories" role="tab" aria-selected="true">
+        <span class="tab-icon">🥗</span>
+        <span class="tab-label">Food</span>
+      </button>
+      <button class="tab" data-tab="rewards" role="tab" aria-selected="false">
+        <span class="tab-icon">⭐</span>
+        <span class="tab-label">Rewards</span>
+      </button>
+    </nav>
   </div>
+
   <script src="app.js"></script>
 </body>
 </html>
